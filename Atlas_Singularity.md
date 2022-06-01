@@ -1,18 +1,15 @@
 # Singularity Environments on Atlas
 
 ## Notes
-These are reproducible steps from scratch for getting an arbitrary conda environment from your personal machine working on atlas
-Replace all instances of awilf and taro in this tutorial with your andrewid and personal workstation name.
+These are reproducible steps from scratch for getting an arbitrary conda environment from your personal machine working on atlas. Find and replace all instances of awilf and taro in this tutorial with your andrewid and personal workstation name.
 
 ## Requirements
-On both atlas and taro have this anaconda installed in /work/awilf/
+On both atlas and taro have this anaconda installed in /work/awilf/ (NOT /home/awilf, because atlas has limited space there)
 ```
 wget https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh
 ```
 
-Your personal workstation should have ubuntu20.04 installed (or if not, change the VM version you use)
-
-Your personal workstation should have singularity3.x installed.  I use 3.6.3; atlas uses singularity3.8.7.  I haven't run into any compatibility issues so far.
+Your personal workstation should have ubuntu20.04 (or if not, change the VM version you use in the `docker:` command below) and singularity3.x installed.  I use 3.6.3; atlas uses singularity3.8.7.  I haven't run into any compatibility issues so far.
 
 ## Building the base environment from scratch [OPTIONAL: once you've done this once, you can cp -R base_sandbox my_new_sandbox_name]
 ```
@@ -23,6 +20,7 @@ apt update
 apt-get install -y wget vim
 exit
 ```
+
 ## Sanity check: use this to run an existing environment to make sure the dependencies work on your local machine
 Open a singularity shell with this sandbox, initialize conda (copied from ~/.bashrc), test dependencies. Replace `tvqa_graph` with an environment you'd like to test, and postfix to the `python -c` line with whatever dependencies you'd like to test.
 
@@ -50,7 +48,9 @@ python -c "import torch; print(torch.cuda.is_available(), torch.__version__); im
 
 ## Clean up dependencies
 On taro: get rid of .local.  Sometimes packages can be hiding here.  We need all packages to be in /work/awilf/anaconda3.
-    mv ~/.local/lib/python3.7 ~/.local/lib/python3.7_bak
+```
+mv ~/.local/lib/python3.7 ~/.local/lib/python3.7_bak
+```
 
 Rerun the above test. If this breaks, then find all the packages installed in .local, uninstall them, and reinstall them in anaconda using lines like this
 
