@@ -64,6 +64,20 @@ pip uninstall -y pandas && pip install --no-cache-dir pandas==0.1.2
 rsync -av /work/awilf/anaconda3 awilf@atlas:/work/awilf/
 ```
 
+### Change environment preprocessing
+If you want to add some environment code to run before singularity runs the container (e.g. in `singularity exec`), you can put it in the file `base_sandbox/environment`.
+
+For this use case, it's necessary to initialize conda within the container. You can do this by putting these lines in `base_sandbox/environment` before building.
+
+```
+#!/bin/sh
+# Custom environment shell code should follow
+
+. /work/awilf/anaconda3/etc/profile.d/conda.sh
+conda activate tvqa_graph
+```
+
+
 ### Create and transfer .sif file (shouldn't take long b/c no packages are stored)
 ```
 rm tvqa_graph.sif
@@ -72,17 +86,22 @@ rsync tvqa_graph.sif awilf@atlas:/results/awilf/imgs
 ```
 
 ### Run on atlas
+Or for shell
 ```
-cd /results/awilf/awilf/imgs
-singularity shell -B /work/awilf/ --nv tvqa_graph.sif
+singularity exec -B /work/awilf/ --nv /results/awilf/awilf/imgs/tvqa_graph.sif python -c "import torch; print(torch.cuda.is_available(), torch.__version__); import torch_scatter; import torch_sparse; import torch_geometric"
+```
 
-source ~/.bashrc # or if this doesn't work, use the __conda_setup block above
-conda activate tvqa_graph
+```
+singularity shell -B /work/awilf/ --nv /results/awilf/awilf/imgs/tvqa_graph.sif
 python -c "import torch; print(torch.cuda.is_available(), torch.__version__); import torch_scatter; import torch_sparse; import torch_geometric"
 ```
+
 
 ## Modifying and creating new sandboxes
 This should be a general solution, but if you need to change anything about the sandbox you can do so with this command
 ```
 sudo singularity shell --writable base_sandbox
 ```
+
+
+## TODO: get this working directly from .def files so it's cleaner
