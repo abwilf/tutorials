@@ -26,6 +26,8 @@ To sum up, then.
 In the rest of this tutorial, I will describe detailed steps for doing this.
 
 ## Requirements
+I think your personal workstation will need to be linux or mac based because the paths have to match.  If you need help accessing a linux workstation, let me know and I'll get you set up on one of the lab workstations for you to develop on.
+
 On both atlas and taro have this anaconda installed in /work/awilf/ (NOT /home/awilf, because atlas has limited space there)
 ```
 wget https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh
