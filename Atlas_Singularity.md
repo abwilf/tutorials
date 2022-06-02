@@ -9,12 +9,12 @@ A common approach to creating containers that can reproduce code between your pe
 3. Copy all the data and code to the container
 4. Package it up, send it out, and run the code wherever
 
-I have found problems with this approcah.  Step (1) works fine, but step (2) can run into unforseen difficulties that can be very hard to debug, especially with conda environments with complex dependencies or `.whl` files.  Step (3) can be very costly in terms of space, and step (4) can take a long time because the container is large; this step also becomes increasingly expensive as the number of edits you make to the code grows.  If you edit the code on your local machine then have to repackage and resend the container each time, it will be very inefficient.
+I have found problems with this approach.  Step (1) works fine, but step (2) can run into unforseen difficulties that can be very hard to debug, especially with conda environments with complex dependencies or `.whl` files.  Step (3) can be very costly in terms of space, and step (4) can take a long time because the container is large; this step also becomes increasingly expensive as the number of edits you make to the code grows.  If you edit the code on your local machine then have to repackage and resend the container each time, it will be very inefficient.
 
 Instead, the approach I take here is slightly different:
 1. On your personal machine, install all packages into a `conda` environment in some path that exists on both your remote and local machines, e.g. `/work/awilf/anaconda3` and get the code working how you'd like
-2. [Same as 1 above] Create a container with the same OS as your personal machine
-3. Activate the container, binding the `conda` env paths within it (so the container can access those files by reference). This should allow you to run the code exactly like you would have from your personal machine's environment by setting an environment script to simply initialize conda in this new shell from wherever conda is stored, `conda activate` an environment, set any environment variables you'd like, and run the code on your personal machine within the container.  To access the code and data, simply bind paths and you can treat them also as references (no copying required).
+2. Create a container with the same OS as your personal machine
+3. Activate the container, binding the `conda` env paths within it (so the container can access those files by reference). Create an environment script to initialize conda in this new shell from wherever conda is stored, `conda activate` the environment, and set any other environment variables you'd like.  Then all you need to do to run the code on your personal machine is bind the paths referencing the code and data so you can see them (by reference) from within the container.
 4. In essence, the container then just needs to store your OS and the steps for activating the environment. So next you'll package it up and send it, but this should be very lightweight and will likely only need to happen once (unless you change your conda environment name).
 5. Send over your code, data ,and *whole* conda folder (I do this for ease, as it only needs to happen once but you may be able to do this with just part by only sending e.g. `/work/awilf/anaconda3/envs/env_name` – though I haven't tested this).  I like to make sure they're in the same absolute paths, so your code doesn't have to change - e.g. if you have your code in `/work/awilf/code.py` and your data in `/work/awilf/data`, then the runscript will be the same between your local and remote machines: e.g. `python /work/awilf/code.py /work/awilf/data` or `singularity exec -B /work/awilf/ --nv container.sif python /work/awilf/code.py /work/awilf/data`. This will be time consuming, but only needs to happen once at the beginning (not whenever you update).  Whenever you update the data, you can send only what was updated with rsync which will not take long – e.g. `rsync -av /work/awilf/anaconda3 awilf@atlas:/work/awilf/`.
 6. To run the code on Atlas, simply prepend a command that pulls the code from your local machine and then runs the command, e.g. `rsync -av --exclude data awilf@taro:/work/awilf/code_dir /work/awilf/ && singularity exec -B /work/awilf/ --nv container.sif /work/awilf/code.py`
@@ -47,22 +47,12 @@ exit
 Open a singularity shell with this sandbox, initialize conda (copied from ~/.bashrc), test dependencies. Replace `tvqa_graph` with an environment you'd like to test, and postfix to the `python -c` line with whatever dependencies you'd like to test.
 
 ```
-# -B binds /work/awilf/ and everything under it to be accessible by your sandbox, including the conda envs you'll send over
+# -B binds /work/awilf/ and everything under it to be accessible by your sandbox, including the conda envs you'll send over.  I would recommend creating a /work/andrew_id folder on your local machine to store conda because that is how it will be on atlas.
+
 # --nv passes nvidia drivers, which you'll need to access GPU
 singularity shell -B /work/awilf/ --nv base_sandbox
 
-__conda_setup="$('/work/awilf/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/work/awilf/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/work/awilf/anaconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/work/awilf/anaconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-
+. /work/awilf/anaconda3/etc/profile.d/conda.sh
 conda activate tvqa_graph
 
 python -c "import torch; print(torch.cuda.is_available(), torch.__version__); import torch_scatter; import torch_sparse; import torch_geometric"
