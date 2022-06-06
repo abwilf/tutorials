@@ -1,0 +1,24 @@
+program: /work/awilf/wandb_example/main.py # TODO
+method: grid
+metric:
+  goal: minimize
+  name: loss
+parameters:
+  dropout:
+    values:
+    - 0.3
+    - 0.4
+  learning_rate:
+    value: .001
+  batch_size:
+    value: 10
+  epochs:
+    value: 1
+  fc_layer_size:
+    values:
+    - 128
+    - 256
+  optimizer:
+    values:
+    - adam
+    - sgd
