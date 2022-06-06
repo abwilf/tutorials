@@ -6,7 +6,7 @@ Some models (e.g. MERLOT) are written in frameworks that are optimized for TPU's
 
 Below are some notes on getting started from your side (collaborator side) and from the admin side, as I plan to share this document with my labmates who are starting similar projects.
 
-## Getting Started (Collaborator Side)
+## Getting Started on our Shared Cluster (Collaborator Side)
 1. Send me your ssh public key.  On linux, you can find this in `~/.ssh/id_rsa.pub`.  It might be elsewhere on Windows. Your ssh key will end with a username, e.g. `...<username>@<machine>`.
 2. I'll send you a confirmation email when you've been added.  In it I will include which TPU number you will use. Go to this link and get the external IP address for your assigned TPU – e.g. an external ip will look like this `34.121.133.146`.
 [https://console.cloud.google.com/compute/tpus?project=social-intelligence-351218](https://console.cloud.google.com/compute/tpus?project=social-intelligence-351218)
@@ -53,8 +53,13 @@ wget https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh && bash
 ## Getting Started (Admin Side)
 **Collaborators: you don't need to read past here**.  These are notes for myself and other admins.
 
+### Building a TPU Cluster (Admin Side)
+1. Apply [here](https://sites.research.google/trc/about/) to get access to the TPU's for free. You can describe your project (in loose detail, please) and say you are working as a research collaborator with researchers at the Language Technologies Institute at CMU.
+2. When your request is granted, create a personal google cloud account and activate the free trial for the personal account (activate the free trial through google cloud and then fill out the form from TRC by submitting your personal email, not your andrew email).  This means that your personal email will now be associated with a free trial credit of $300 and you'll have free TPU's on it.
+3. Once they get back to you telling you which zone your TPU's are in, move to the next section (not before, else they'll charge you for the TPU's). The key part of the next section is to spin up, use, and delete the ubuntu VM as quickly as possible so you aren't charged for it.
+
 ### Create a TPU VM
-To create the first TPU VM, you first need to spin up another VM in the same region (e.g. `us-central-1f`) and do these commands from there.
+To create the first TPU VM, you first need to spin up (through the web console) another VM in the same region (e.g. `us-central-1f`) and do these commands from there.
 ```
 name='tpu1' && zone='us-central1-f' && tpu_type='v2-8'
 gcloud config set compute/zone ${zone}
@@ -65,12 +70,12 @@ gcloud alpha compute tpus tpu-vm create ${name} \
 --version tpu-vm-tf-2.8.0
 ```
 
-You can then ssh into the TPU.  You should first add yourself as a user so you don't have to log in as root in the future.  See the section below for how to do that.
+You can then ssh into the TPU.  You should first add yourself as a user so you don't have to log in as root in the future.  See the section below on "Adding a Collaborator" for how to do that. The key point is to add your ssh key to `~/.ssh/authorized_keys`, make yourself a sudo user, and add the TPU VM external IP to your local `~/.ssh/config`.
 ```
 gcloud alpha compute tpus tpu-vm ssh ${name} --zone ${zone}
 ```
 
-At this point, you should shut down and delete the initial VM.  You have to pay for that, whereas the TPU VM's are covered by the grant.  We also have to pay for the data disks, but that cost is negligible.
+At this point, you should **shut down and delete the initial VM**.  TPU's are free, but you have to pay for that (though it will be coming out of your trial credit).  You also have to pay for the data disks, but that cost is negligible.
 
 ### Add a Data Disk to a TPU VM
 You can add a data disk using the instructions [online](https://cloud.google.com/compute/docs/disks/add-persistent-disk).  To attach it to a TPU (read-only mode so it can be attached to multiple TPU's)
@@ -93,36 +98,34 @@ You can also do the same thing but with `detach-disk` if you need to.
 
 
 ## Adding a Collaborator (Admin Side)
-1. Ask for their ssh public key.
-2. Add them as a user to one of the TPU's.
+1. Ask for their ssh public key (or if this is you, get your ssh public key from `~/.ssh/id_rsa.pub` on your local or use `ssh-keygen`)
+2. Add them as a user to one of the TPU's. You can find the username at the end of the ssh public key: `...<username>@<host>`. 
 
 ```
-# to ssh in from a google vm or another tpu
-name='tpu4' && zone='us-central1-f' && tpu_type='v2-8'
+# if you're not already in, ssh in from a google vm or another tpu
+name='tpu1' && zone='us-central1-f' && tpu_type='v2-8'
 gcloud alpha compute tpus tpu-vm ssh ${name} --zone ${zone}
 
-# to ssh in from taro
-ssh awilf@tpu5
-
 # create user
-sudo useradd -m -d /home/milo -s /bin/bash milo
-sudo passwd milo
+sudo useradd -m -d /home/<username> -s /bin/bash <username>
+sudo passwd <username>
 1234
-sudo adduser milo sudo
+sudo adduser <username> sudo
 
 # add to authorized keys
-sudo mkdir -p /home/milo/.ssh/
+sudo mkdir -p /home/<username>/.ssh/
 sudo bash -c 'echo \
 "\
 PASTE_SSH_PUBLIC_KEY_HERE\
 "\
->> /home/milo/.ssh/authorized_keys'
+>> /home/<username>/.ssh/authorized_keys'
 
 # ensure the directory is owned by the new user
-sudo chown -R milo /home/milo/.ssh
+sudo chown -R <username> /home/<username>/.ssh
 ```
 
-3. Send them an email with the external IP and which TPU number they are
-
-
+3. Send them an email with the external IP and which TPU number they are. Have them go through the "Getting Started on our Shared Cluster" steps; ensure that they can log into the tpu via this command.
+```
+ssh <username>tpu
+```
 
