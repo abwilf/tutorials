@@ -94,11 +94,11 @@ You can also do the same thing but with `detach-disk` if you need to.
 
 ## Adding a Collaborator (Admin Side)
 1. Ask for their ssh public key.
-2. Add them as a `sudo` user to one of the TPU's.
+2. Add them as a user to one of the TPU's.
 
 ```
 # to ssh in from a google vm or another tpu
-name='tpu5' && zone='us-central1-f' && tpu_type='v2-8'
+name='tpu4' && zone='us-central1-f' && tpu_type='v2-8'
 gcloud alpha compute tpus tpu-vm ssh ${name} --zone ${zone}
 
 # to ssh in from taro
@@ -108,6 +108,7 @@ ssh awilf@tpu5
 sudo useradd -m -d /home/milo -s /bin/bash milo
 sudo passwd milo
 1234
+sudo adduser milo sudo
 
 # add to authorized keys
 sudo mkdir -p /home/milo/.ssh/
@@ -115,7 +116,7 @@ sudo bash -c 'echo \
 "\
 PASTE_SSH_PUBLIC_KEY_HERE\
 "\
-> /home/milo/.ssh/authorized_keys'
+>> /home/milo/.ssh/authorized_keys'
 
 # ensure the directory is owned by the new user
 sudo chown -R milo /home/milo/.ssh
