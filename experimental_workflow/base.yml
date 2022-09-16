@@ -1,0 +1,16 @@
+program: /work/awilf/<repo_name>/<command_file>
+method: grid
+metric:
+  goal: maximize
+  name: dev_acc
+parameters:
+  epoch:
+    value: 5
+  cls_tokens:
+    values:
+    - 0
+    - 1
+  factorized:
+    values:
+    - 0
+    - 1

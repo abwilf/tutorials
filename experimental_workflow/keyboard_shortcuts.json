@@ -1,0 +1,102 @@
+// Place your key bindings in this file to override the defaults
+[
+    { "key": "cmd+1", "command": "workbench.action.openEditorAtIndex1" },
+    { "key": "cmd+2", "command": "workbench.action.openEditorAtIndex2" },
+    { "key": "cmd+3", "command": "workbench.action.openEditorAtIndex3" },
+    { "key": "cmd+4", "command": "workbench.action.openEditorAtIndex4" },
+    { "key": "cmd+5", "command": "workbench.action.openEditorAtIndex5" },
+    { "key": "cmd+6", "command": "workbench.action.openEditorAtIndex6" },
+    { "key": "cmd+7", "command": "workbench.action.openEditorAtIndex7" },
+    { "key": "shift+cmd+k",           "command": "workbench.view.explorer" },
+    { "key": "shift+cmd+l",           "command": "workbench.view.scm" },
+    { "key": "cmd+b",                 "command": "workbench.action.toggleSidebarVisibility" },
+    { "key": "cmd+8", "command": "workbench.action.openEditorAtIndex8" },
+    { "key": "cmd+shift+o", "command": "git.openFile", "when": "editorFocus && isInDiffEditor"
+    },
+    {
+        "key": "cmd+shift+o",
+        "command": "git.openChange",
+        "when": "editorFocus && !isInDiffEditor"
+    },
+    { "key": "shift+cmd+e",                    "command": "workbench.action.debug.start", "when": "debuggersAvailable && !inDebugMode" },
+    { "key": "shift+cmd+r",          "command": "workbench.action.debug.restart", "when": "inDebugMode" },
+    { "key": "shift+cmd+t",              "command": "workbench.action.debug.stop", "when": "inDebugMode" },
+    { "key": "ctrl+cmd+c",                    "command": "workbench.action.debug.continue", "when": "inDebugMode" },
+    { "key": "shift+cmd+b",                    "command": "editor.debug.action.toggleBreakpoint", "when": "debuggersAvailable && editorTextFocus" },   
+    { "key": "shift+cmd+n",                   "command": "workbench.action.debug.stepOver", "when": "debugState == 'stopped'" },
+    { "key": "shift+cmd+m",                    "command": "workbench.action.debug.pause", "when": "debugState == 'running'" },
+    { "key": "shift+cmd+y", "command": "workbench.panel.repl.view.focus", "when": "editorFocus" },
+    { "key": "shift+cmd+y", "command": "workbench.action.focusActiveEditorGroup", "when": "inDebugRepl"},
+    {
+        "key": "ctrl+4 ctrl+5",
+        "command": "workbench.debug.action.toggleRepl",
+        "when": "workbench.panel.repl.view.active"
+    },
+    {
+        "key": "shift+cmd+y",
+        "command": "-workbench.debug.action.toggleRepl",
+        "when": "workbench.panel.repl.view.active"
+    },
+    {
+        "key": "ctrl+5 6",
+        "command": "workbench.action.output.toggleOutput",
+        "when": "workbench.panel.output.active"
+    },
+    {
+        "key": "shift+cmd+u",
+        "command": "-workbench.action.output.toggleOutput",
+        "when": "workbench.panel.output.active"
+    },
+    {
+        "key": "ctrl+c ctrl+b",
+        "command": "workbench.action.terminal.clear",
+        "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
+    },
+    {
+        "key": "cmd+k",
+        "command": "-workbench.action.terminal.clear",
+        "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
+    },
+    {
+        "key": "cmd+l",
+        "command": "workbench.action.gotoLine"
+    },
+    {
+        "key": "ctrl+g",
+        "command": "-workbench.action.gotoLine"
+    },
+    {
+        "key": "cmd+k left",
+        "command": "-workbench.action.moveActiveEditorGroupLeft"
+    },
+    {
+        "key": "cmd+k right",
+        "command": "-workbench.action.moveActiveEditorGroupRight"
+    },
+    {
+        "key": "shift+alt+cmd+left",
+        "command": "workbench.action.focusPreviousGroup"
+    },
+    {
+        "key": "cmd+k shift+cmd+left",
+        "command": "-workbench.action.moveEditorLeftInGroup"
+    },
+    {
+        "key": "shift+alt+cmd+right",
+        "command": "workbench.action.focusNextGroup"
+    },
+    {
+        "key": "shift+cmd+2",
+        "command": "workbench.action.focusFirstEditorGroup"
+    },
+    {
+        "key": "cmd+1",
+        "command": "-workbench.action.focusFirstEditorGroup"
+    },
+    {
+        "key": "shift+alt+cmd+left",
+        "command": "-cursorColumnSelectLeft",
+        "when": "textInputFocus"
+    },
+
+]

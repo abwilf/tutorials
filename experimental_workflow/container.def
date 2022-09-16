@@ -1,0 +1,6 @@
+Bootstrap: docker
+From: nvidia/cuda:11.1.1-cudnn8-devel-ubuntu20.04
+
+%environment
+    . /work/awilf/anaconda3/etc/profile.d/conda.sh
+    conda activate aang

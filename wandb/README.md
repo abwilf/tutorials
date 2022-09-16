@@ -58,13 +58,6 @@ sbatch sweep.sbatch
 
 Check out the link on your wandb page to watch the sweep in action. 
 
-<!-- This last part is optional, but I built a little service to email me when the full sweep is finished. After you've submitted the above commands, modify `email_finished.sbatch` with the number of workers you provisioned as the argument to `email_checker.py`, then submit
-```
-sbatch email_finished.sbatch
-```
-
-You can also change the `mail-type` of `sweep.sbatch` so those don't email you anymore, just the final one. -->
-
 ### To Debug
 Do (1) and (2) but then provision an interactive node via `srun`
 ```

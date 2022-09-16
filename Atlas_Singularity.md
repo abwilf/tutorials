@@ -54,7 +54,7 @@ Create a file called `container.def`.  Inside, initialize your container like th
 **container.def**:
 ```
 Bootstrap: docker
-From: nvidia/cuda:11.1-cudnn8-devel-ubuntu20.04
+From: nvidia/cuda:11.1.1-cudnn8-devel-ubuntu20.04
 
 %environment
     . /work/awilf/anaconda3/etc/profile.d/conda.sh
@@ -79,3 +79,6 @@ To get working on Atlas, the code will be the same:
 singularity exec -B /work/awilf/ --nv tvqa_graph.sif \
 whatever_program_you_want_to_run
 ```
+
+## Note:
+Make sure you're using **no pip cache**, so all your environments are really in your anaconda folders (this is tricky – you'll need to make sure you're not caching things in `/home/andrewid`). That will impact reproducability _and_ on Atlas and Vulcan you'll run out of space in `/home` very quickly.  You can use `du -sh /home/awilf` to check how much space you're using.  It should be almost none.
