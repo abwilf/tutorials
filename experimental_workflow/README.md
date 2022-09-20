@@ -4,14 +4,20 @@ The goal of this tutorial is to introduce you to the way I manage my experiments
 
 Note: if you'd like to skip the high level and go straight to my system, it's in "My Experimental Flow" below.
 
+As motivation, here's an [example video](https://drive.google.com/file/d/1S4YVQKXfmvV5s5D1WC5V61IvYuipLMjb/view?usp=sharing) of what my workflow looks like for deploying experiments in real time.
+
 ## Goals of a Good Experimental Workflow
-First, we should answer: "what is an experimental workflow?" I think of it as a _set of routines_ that define how I begin, develop, experiment, consolidate, and understand my research projects. I think a good experimental workflow should do four things well:
+First, we should answer: "what is an experimental workflow?" I think of it as a _set of routines_ that define how I begin, develop, test, and consolidate my gains when doing research. I think a good experimental workflow should do four things well:
 1. **Environments**: we would like to work out our environment and dependencies _once_ in a setting where we have full control (i.e. `sudo`), then be able to port this environment seamlessly over to any deployment setting we'd like (e.g. Atlas, TPU...etc).
-2. **Experimental Reproducability**: we'd like to be able to easily go back to the results of previous experiments and reproduce those experiments exactly.
-3. **Running Experiments with a Single Command**: oftentimes "running experiments" takes a lot of work, but it doesn't have to. What we have to do is (a) define the parameters that define our experiment, (b) provision the nodes we'd like to distribute across, (c) sync our code between each node, and (d) run the code on each node. This should all be automated.
+2. **Experimental Reproducability**: we'd like to be able to easily revert back to previous versions and reproduce those results.
+3. **Running Experiments with a Single Command**: oftentimes "running experiments" takes a lot of work, but it doesn't have to. What we have to do is (a) define the parameters that define our experiment, (b) provision the nodes we'd like to distribute across, (c) sync our code between each node, and (d) run the code on each node. This can all be automated, and is below.
 4. **Collating and Visualizing Results from Experiments, Drawing Conclusions, Consolidating Gains**: we'd like to be able to quickly and easily collate the results from our experiments, no matter where they were run.  We will then want to construct visualizations about our results so we can draw conclusions.  Before we move on, we'd like to consolidate our gains by keeping a clear log of what we learned and how to rerun this experiment.
 
-At a high level, I see a good experimental workflow as removing all the existential worries about research that keep us up at night (e.g. "What if I can't reproduce the experiments I've already run? Did I forget to commit? Did I forget to push??", "Getting this working on the cluster is going to be a nightmare"). The goal is to have a set of procedures that we always follow so we can do great science and not have to worry about the little things all the time. Also, by building solid foundations of how you approach experiments, you can begin to scale and perform more experiments, faster, with less mental energy required and less possibility for mistakes.
+At a high level, I see a good experimental workflow as removing all the existential worries about research that might keep us up at night (e.g. "What if I can't reproduce the experiments I've already run? Did I forget to commit? Did I forget to push??", "Getting this working on the cluster is going to be a nightmare"). The goal is to have a set of procedures that we always follow so we can do great science and not have to worry about these kinds of questions. 
+
+Also, building a solid experimental workflow allows us to scale the number of experiments we can perform without requiring more mental energy or reducing  losing confidence in our 
+
+Also, by building solid foundations of how we approach experiments we can perform more experiments, faster, with less mental energy required and a reduced possibility for mistakes.
 
 ## Pitfalls
 Why is it hard to create a good experimental workflow? I'll answer in each of the four categories we talked about above.
@@ -20,11 +26,11 @@ Why is it hard to create a good experimental workflow? I'll answer in each of th
 2. **Experimental Reproducability**: if you don't keep a log, or your commit and reproducability system is not well structured, you may lose confidence in the reproducability of past experiments, meaning you'll need to rerun them.
 3. **Running Experiments with a Single Command**: There are a few things you usually have to do to run an experiment (which I'll define here as one or multiple runs of a program where you're looking for differences in the output - e.g. performance).
         
-    1. Define the parameters of the experiment: all the different things you'd like to test.
+    1. Define the parameters of the experiment: all the different things you'd like to test
     
-    2. Sync the code from development to your deployment env.
+    2. Sync the code from development to your deployment env
     
-    3. Start up all the different workers you want to distribute across
+    3. Start up the different workers you want to distribute across
 
     A simple example of this would be: you create a bunch of different programs that write to different .json file outputs, you sync the code over to atlas using rsync, you start up a few workers using srun or sbatch with the different commands. The problem is, this is a lot for you to do by hand; it's easy to make mistakes, and it slows you down.  This should all be automated.
 
@@ -102,12 +108,12 @@ When you run this code, you'll see a beautiful page like this for this "run".
 You can go to all the runs in your project and view, sort, filter, and otherwise mess with the visualizations to understand how your experiments are proceeding.  It's wonderful.
 ![alt text](imgs/all_runs.png "Title")
 
-A note: it's bad practice to have multiple versions of code for different experiments; instead I use argument flags so I can reproduce all my experiments using different arguments to my code, making the codebase cohesive and reproducible. I also control randomness through seeds so my experiments are really reproducible.
+A note: it's bad practice to have multiple versions of code for different experiments; instead it's recommended to use argument flags so you can reproduce all your experiments using different arguments to the code, making the codebase cohesive and reproducible. I also control randomness through seeds so my experiments are perfectly reproducible.
 
-Butn now you may be thinking: this isn't really deployment! I ran this on my local machine, and this is only a single run. How can I make this more generalizable and solve the problems you raised above? Good point, we'll solve that next.
+But now you may be thinking: "this isn't really deployment! I ran this on my local machine, and this is only a single run. How can I make this more generalizable and solve the problems you raised above?" Good point, we'll solve that next.
 
 ##### Single Run (Generalizable Version)
-Wandb has something called "sweeps", which are (for our purposes for the moment) equivalent to distributed grid searches. You specify all the arguments in a `config.yml` file, then wandb creates a `sweep` on its server, and when you run the command `wandb agent sweep/id/things` (this is given to you when you run sweep) on a computer, that computer becomes a "worker", the wandb server tells it which command to run, and captures its outut for centralized logging on the server.  So to run a single command, e.g.
+Wandb has something called "sweeps", which are (for our purposes for the moment) equivalent to distributed grid searches. You specify all the arguments in a `config.yml` file, then wandb creates a `sweep` on its server, and when you run the command `wandb agent sweep/id/things` (this is given to you when you run sweep) on a computer, that computer becomes a "worker". The wandb server tells it which command to run and captures its outut for centralized logging on the server.  When the run is finished, each worker checks with the server and it tells it what to run next until all the runs in the sweep have been finished.  So to run a single command, e.g.
 `python /work/awilf/<repo_name>/<command_file> --epoch 5 --cls_tokens 0 --factorized 0`
 
 in this way, we'd specify a config file like this
@@ -116,7 +122,7 @@ program: /work/awilf/<repo_name>/<command_file>
 method: grid
 metric:
   goal: maximize
-  name: dev_acc
+  name: dev_acc # or whatever the final performance metric is
 parameters:
   epoch:
     value: 5
@@ -196,7 +202,7 @@ parameters:
 Then you can run `python wdb.py --c config.yml` and with the resulting sbatch command, paste that as many times on Atlas as you'd like to distribute your tests.
 
 #### Collating and Visualizing Results, Drawing and Storing Conclusions
-All your runs will be collated in wandb.  You can check out the dashboards and visualization tools to help you.  At the end of each experiment, I commit and store the commit hash in my log file (in google docs, so I can include images).  E.g.
+All your runs will be collated in wandb.  You can check out the dashboards and visualization tools to help you.  At the end of each experiment, I commit and store the commit hash in my log file (in google docs, so I can include images). e.g.
 
 ![](imgs/log_1.png)
 ![](imgs/log_2.png)
