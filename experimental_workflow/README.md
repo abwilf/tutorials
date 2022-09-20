@@ -4,7 +4,7 @@ The goal of this tutorial is to introduce you to the way I manage my experiments
 
 Note: if you'd like to skip the high level and go straight to my system, it's in "My Experimental Flow" below.
 
-As motivation, here's an [example video](https://drive.google.com/file/d/1S4YVQKXfmvV5s5D1WC5V61IvYuipLMjb/view?usp=sharing) of what my workflow looks like for deploying experiments in real time.
+As motivation, here's an [example video](https://drive.google.com/file/d/1wcT3tpFMPAqScjwVNyajd1VKGLsYfjcd/view?usp=sharing) of what my workflow looks like for deploying experiments in real time.
 
 ## Goals of a Good Experimental Workflow
 First, we should answer: "what is an experimental workflow?" I think of it as a _set of routines_ that define how I begin, develop, test, and consolidate my gains when doing research. I think a good experimental workflow should do four things well:
