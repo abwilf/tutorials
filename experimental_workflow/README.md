@@ -201,6 +201,9 @@ parameters:
 
 Then you can run `python wdb.py --c config.yml` and with the resulting sbatch command, paste that as many times on Atlas as you'd like to distribute your tests.
 
+##### Many Runs, Many Experiments
+The `wdb.py` script also supports a little workaround I use to be able to run multiple different experiments from a single yaml where experiments may have some shared and some unshared hyparparameters defining their search. Check out the docstring at the top of `wdb.py` and the `composite.yml` files for details.
+
 #### Collating and Visualizing Results, Drawing and Storing Conclusions
 All your runs will be collated in wandb.  You can check out the dashboards and visualization tools to help you.  At the end of each experiment, I commit and store the commit hash in my log file (in google docs, so I can include images). e.g.
 

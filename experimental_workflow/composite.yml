@@ -1,0 +1,125 @@
+program: scripts.autoaux_betty
+command:
+  - ${interpreter}
+  - -m
+  - ${program}
+  - ${args}
+method: grid
+metric:
+  goal: maximize
+  name: test_f1
+parameters:
+  subtests:
+    ####
+    rw_sig1,rw_sig2: # this will be the tag; separate with commas for multiple tags
+      gradient_accumulation_steps:
+        values:
+        - 5
+      unroll_steps:
+        values:
+        - 1
+      rw_strat:
+        value: sig1
+      rw_init_prim:
+        values:
+        - -1
+        - 0
+        - 1
+        - 2
+      rw_init_aux:
+        values:
+        - -1
+        - 0
+        - 1
+    
+    baseline:
+      gradient_accumulation_steps:
+        values:
+        - 5
+      unroll_steps:
+        values:
+        - 1
+      ####
+
+  prim-task-id:
+    value: citation_intent
+  train_data_file:
+    value: datasets/citation_intent/train.jsonl
+  dev_data_file:
+    value: datasets/citation_intent/dev.jsonl
+  test_data_file:
+    value: datasets/citation_intent/test.jsonl
+  output_dir:
+    value: autoaux_outputs/JOINT-BASIC/citation_intent/auxlr=1.0.soptlr=0.1.classflr=0.0001.wfrac=0.06.nconf_samp=3.primbsz=128.auxbsz=256/seed=0
+  model_type:
+    value: roberta-base
+  model_name_or_path:
+    value: roberta-base
+  tokenizer_name:
+    value: roberta-base
+  per_gpu_train_batch_size:
+    value: 17
+  do_train:
+    value: 1
+  learning_rate:
+    value: 0.0001
+  block_size:
+    value: 512
+  logging_steps:
+    value: 10000
+  classf_lr:
+    value: 0.0001
+  classf_patience:
+    value: 300
+  num_train_epochs:
+    value: 150
+  classifier_dropout:
+    value: 0.3
+  overwrite_output_dir:
+    value: 1
+  classf_iter_batchsz:
+    value: 8
+  classf_ft_lr:
+    value: 1e-6
+  classf_max_seq_len:
+    value: 512
+  seed:
+    value: 0
+  classf_dev_wd:
+    value: 0.1
+  classf_dev_lr:
+    value: 0.01
+  searchspace-config:
+    value: jointbasic
+  task-data:
+    value: datasets/citation_intent/train.txt
+  in-domain-data:
+    value: datasets/citation_intent/domain.10xTAPT.txt
+  num-config-samples:
+    value: 3
+  dev_batch_sz:
+    value: 32
+  eval_clf_every:
+    value: 30
+  eval_every:
+    value: 30
+  prim-aux-lr:
+    value: 0.1
+  auxiliaries-lr:
+    value: 1.0
+  classf_warmup_frac:
+    value: 0.06
+  classf_wd:
+    value: 0.1
+  base_wd:
+    value: 0.01
+  dev_fit_iters:
+    value: 10
+  step-meta-every:
+    value: 3
+  token_temp:
+    value: 0.5
+  classf-metric:
+    value: f1
+  pure-transform:
+    value: 1
