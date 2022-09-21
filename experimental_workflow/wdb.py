@@ -86,6 +86,18 @@ after running p wdb.py --c composite.yml, two sbatch files will be written corre
 then in the wandb dashboard filter on tags.
     composite_rw_sig1,rw_sig2.sbatch
     composite_baseline.sbatch
+
+Also another little nice thing, is that in the subtest, you can specify "_num_nodes", which will just modify how many sbatch commands are printed
+for that subtest. e.g. below.  This is nice b/c then you can specify in the config and just copy paste the output (e.g. 6 sbatch commands for the first
+subtest, 3 for the next...etc) into atlas.  This completely removes all manual effort from the process – except for the copy paste, that is :)
+
+parameters:
+  subtests:
+    rw_sig1,rw_sig2: # this will be the tags; separate with commas for multiple tags applied to this run
+      _num_nodes: 8 # will print the sbatch command 8 times
+      rw_strat: # these are all the unshared hyperparams
+        value: sig1
+
 '''
 import sys; sys.path.append('/work/awilf/utils/'); from alex_utils import *
 import wandb
@@ -125,7 +137,7 @@ def create_sweep(this_yml, tags):
         print(f'\n\n{output[0]}') # Create sweep with ID...
         print('Sweep URL and Atlas Command:')
     sweep_url = output[1].strip().split(' ')[-1] # sweep url
-    print(sweep_url)
+    gc['sweep_urls'].append(sweep_url)
 
     # Modify sbatch
     sbatch = read_txt(gc['base_sb'])
@@ -138,7 +150,7 @@ def create_sweep(this_yml, tags):
         print(f'Writing sbatch file to {sbatch_file}')
     write_txt(sbatch_file, sbatch)
 
-    print(f'sbatch {join(os.getcwd(), sbatch_file)}')
+    gc['sbatch_commands'].append(f'sbatch {join(os.getcwd(), sbatch_file)}')
 
     if gc['v']:
         print(os.popen(f'cat {join(os.getcwd(), sbatch_file)} | tail -2').read().replace('\\', '').replace('\n', ''))
@@ -155,6 +167,13 @@ def main(_gc):
         if gc['v']:
             print('This is a composite sweep!\n')
         
+        gc = {
+            **gc,
+            'sweep_urls': [],
+            'sbatch_commands': [],
+            'num_nodes': [], # how many times to print out each command; if not included = 1
+        }
+
         # write new yamls with same name but append _<tagname>, _<tagname>...etc
         base_obj = copy.deepcopy(d)
         del base_obj['parameters']['subtests']
@@ -166,8 +185,20 @@ def main(_gc):
                 **this_yml['parameters'],
                 **v,
             }
+            this_yml['name'] = tags
+            
+            if '_num_nodes' in this_yml['parameters']:
+                gc['num_nodes'].append(this_yml['parameters']['_num_nodes'])
+                del this_yml['parameters']['_num_nodes']
+            else:
+                gc['num_nodes'].append(1)
 
             create_sweep(this_yml, tags)
+        
+        print('\n'.join(gc['sweep_urls']),'\n')
+        for sbatch_command, num_nodes in zip(gc['sbatch_commands'], gc['num_nodes']):
+            for _ in range(num_nodes):
+                print(sbatch_command)
 
     else:
         create_sweep(d, '')
