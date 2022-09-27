@@ -43,6 +43,15 @@ I use...
 * wandb (and associated config files) for experimental reproducability, experiment creation and running, data collation and visualization
 * vscode for coding and debugging remotely on my dev machine
 * iterm + tmux for my terminal, so that I can close my computer and not have to worry about my programs finishing b/c my ssh session was ended
+* Any time I will log into a server more than once, I use **ssh keys**. If you're logging in from your laptop (or any other machine), get your ssh public key from there and put it in the remote server at `~/.ssh/authorized_keys`. This way you'll never have to enter a password to `ssh` into or `rsync` to or from the remote server. VScode also piggybacks on this, so you can remotely code edit without passwords.
+```bash
+mkdir -p /home/<username>/.ssh/
+bash -c 'echo \
+"\
+PASTE_SSH_PUBLIC_KEY_HERE\
+"\
+>> /home/<username>/.ssh/authorized_keys'
+```
 
 ### Specifics
 #### Setting up Environments
