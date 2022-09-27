@@ -52,6 +52,7 @@ PASTE_SSH_PUBLIC_KEY_HERE\
 "\
 >> /home/<username>/.ssh/authorized_keys'
 ```
+* I have two environments: my development machine and the deployment environment.  I write all my code and do all my testing on my development machine (called taro), then I deploy all my tests to the Atlas cluster. If you're unfamiliar with how slurm clusters work, here is an [introductory video explaining them](https://drive.google.com/file/d/1flMH3tAZKg4y9pwV8edbgsvu0DHvzmfn/view?usp=sharing), and here are the [rules for using the Atlas cluster](https://docs.google.com/document/d/16OQ6f4Azrl9kp7FXdCzBdzvvGDSaUJzCRBNbDTLPecs/edit?usp=sharing).
 
 ### Specifics
 #### Setting up Environments
