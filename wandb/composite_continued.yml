@@ -1,0 +1,22 @@
+program: main.py
+method: grid
+parameters:
+  # all shared parameters here
+  seed:
+    value: 42
+  wdb_entity:
+    value: socialiq
+  
+  # all subtest parameters here  
+  subtests:
+    iso_tests,hp1_iso:
+      hp1:
+        values:
+        # - 1
+        # - 2
+        # - 3
+        - 4
+        - 5
+        - 6
+      hp2:
+        value: 4

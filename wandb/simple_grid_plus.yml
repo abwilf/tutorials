@@ -1,0 +1,21 @@
+program: main.py
+method: grid
+parameters:
+  subtests:
+    tag_name1,tag_name2:
+      hp1:
+        values:
+        - 1
+        - 2
+        - 3
+      hp2:
+        values:
+        - 4
+        - 5
+        - 6
+      seed:
+        value: 42
+      wdb_entity:
+        value: socialiq
+      tags:
+        value: test

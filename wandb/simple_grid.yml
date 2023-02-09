@@ -1,0 +1,19 @@
+program: main.py # TODO: change name of program
+method: grid
+parameters:
+  hp1:
+    values:
+    - 1
+    - 2
+    - 3
+  hp2:
+    values:
+    - 4
+    - 5
+    - 6
+  seed:
+    value: 42
+  wdb_entity:
+    value: socialiq
+  tags:
+    value: test
