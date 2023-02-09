@@ -5,7 +5,7 @@ For any conda environment on your development machine, seamlessly reproduce it o
 1. On your dev machine, make sure all packages are installed in `/work/username/anaconda3/my_env`
 2. Get your program working in a conda environment on your dev machine, e.g. `conda activate my_env && python my_program.py`
 3. Create a `singularity` container `my_env.sif` from the `container.def` file below; make sure you can run your program in it e.g. `singularity exec -B /work/awilf/ --nv my_env.sif python my_program.py`
-4. Sync your dependencies, container, and code over to Atlas. Run the same command, make sure it works!
+4. Sync your dependencies, container, data, and code over to Atlas. Run the same command, make sure it works!
 
 This process is illustrated below
 ![Image](./singularity_atlas.png)
