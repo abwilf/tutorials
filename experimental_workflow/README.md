@@ -222,6 +222,18 @@ All your runs will be collated in wandb.  You can check out the dashboards and v
 
 You can use the "tags" feature of wandb.init to help you filter your runs, as well.
 
+### Multi-trial Testing
+**Problem**: we want to be able to do HP search AND do it with multiple trials.  we could run multiple trials at the program level and log only mean and std, but then we would miss out on the nice capabilities of wandb to aggregate multiple runs so we can see the training and testing accuracies, and we can leverage wandb to get the boxplots and violin plots.
+
+do this with multiple seeds, then group by the parameter of interest in the "table" section of wandb; then plots automatically adjust once runs are grouped and you can do your "best" testing ignoring random seeds
+
+Now I use wandb reports. I make a new one for each test or series of tests I run. It's easiest to group runs, then send one graph over to the report, then create a section, save it, and then import the rest of the graphs.
+
+workflow
+    group run set
+    visualize results in good plots
+    add them to a report with observations
+
 ### Some Minor Notes
 These are more general aspects of workflow:
 * I use [Alfred](https://www.alfredapp.com/) for my mac. I use the snippets (e.g. ;alexut -> import sys; sys.path.append('/work/awilf/utils/'); from alex_utils import *) and multiple clipboard features constantly.
@@ -238,3 +250,4 @@ parameters:
     ...
 ```
 * I haven't talked almost at all about managing code style.  If you're interested, this is a good resource: [goodresearch.dev](https://goodresearch.dev/).
+
