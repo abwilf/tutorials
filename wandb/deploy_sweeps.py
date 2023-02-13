@@ -101,9 +101,9 @@ def main():
     for tags,v in d['parameters']['subtests'].items():
         this_yml = copy.deepcopy(base_obj)
         this_yml['parameters'] = {
-            '_tags': {'value': tags},
             **this_yml['parameters'],
             **v,
+            '_tags': {'value': tags},
         }
         this_yml['name'] = tags
         
