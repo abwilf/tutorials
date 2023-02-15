@@ -6,6 +6,13 @@
 - Automate the process with `deploy_sweeps.py`
 - Scale your sweep capabilities to multi-sweep and continued sweep configs
 
+To get started with this wandb functionality to your repository, simply copy these files over, modify them, then use deploy sweeps
+```bash
+# git commit ...etc
+cp /work/awilf/tutorials/wandb/*.py ./ && cp /work/awilf/tutorials/wandb/composite_grid.yml ./ && cp /work/awilf/tutorials/wandb/base.sbatch ./
+# modify .sbatch, .yml files as needed
+p deploy_sweeps.py --c composite_grid.yml # for example
+```
 ## How Does wandb Work and Why Do We Care?
 Imagine you want to run all combinations of two hyperparameters: `hp1` and `hp2`, where `hp1` can take on the values `1,2,3` and `hp2` can take on the values `4,5,6`. You need to run `9` programs in total. Or you have nine jobs you'd like to be run by some program, with ids `1...9`. How do you distribute the work?
 
@@ -267,6 +274,40 @@ Then after running `p deploy_sweeps.py --c composite_continued.yml` and the resu
 
 ![](imgs_4.png)
 
-One final note: if you need to programatically interact with your wandb runs, check out `clean_wdb.py` and `modify_runs.py`. You can extract data or modify runs depending on the tags or other aspects you'd like to filter on.
+If you need to programatically interact with your wandb runs, check out `clean_wdb.py` and `modify_runs.py`. You can extract data or modify runs depending on the tags or other aspects you'd like to filter on.
+
+## My Testing Workflow
+A final note, on my testing workflow. You can use this as a starting point for your own workflow, if you'd like. 
+
+### During the Day
+
+1. Review the results from the day before on wandb. 
+  a. Add results to a report in a panel grid. In the heading of that section, include date and tag name of this test. 
+  b. Come up with a hypothesis I want to test next.
+  c. Commit current code (using tag name).
+2. Create test with new tag name + `dev_tests` in the `subtests` portion of my `yml` file, e.g.
+```yaml
+program: my_program.py
+method: grid
+parameters:
+  seed:
+    value: 42
+  # more stable variables here...
+  subtests:
+    this_test_name,dev_tests:
+      variable_to_test:
+        values:
+        - 1
+        - 2
+        - 3
+```
+3. Write little tests, get working as I expect on my local machine. When I've finished development testing, I use `clean_wdb.py` with `dev_test` tag. Now I'm ready to deploy.
+5. Deploy tests. This happens at least an hour before I leave for the day, because I want to make sure nothing's crashed or gone wrong.
+6. Write down notes for yourself what to look for in this test tomorrow. e.g.
+> Testing `variable_to_test`. Hypothesis: higher values will lead to longer convergence time...etc. If so, test __ next. If not, test __ then __ next. Visualize with convergence plots filtered to tag `this_test_name` and grouped by `variable_to_test`.
+7. Before you go: make sure results make sense as they come in.
+
+### Next Morning
+
 
 That's all for now! Please let me know if you have any questions. It takes a bit of work to get this system up and running, but hopefully it is very worth your while. I know it has been for me.
