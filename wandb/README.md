@@ -182,6 +182,24 @@ wandb agent socialiq/wandb2/sk58qom2
 
 You can then run the `wandb agent` command on your local machine, or submit the sbatch scripts to atlas by copy and pasting the `sbatch` line, or both.
 
+A note: I've added a check in `deploy_sweeps` where you can remove the `value:` and `values:` lines required by `wandb`. `deploy_sweeps` will fill them in for you. For example, the above yaml would become
+```yaml
+program: main.py
+method: grid
+parameters:
+  subtests:
+    tag_name1,tag_name2:
+      hp1:
+        - 1
+        - 2
+        - 3
+      hp2:
+        - 4
+        - 5
+        - 6
+      seed: 42
+      wdb_entity: socialiq
+```
 
 ### Multiple Sweep Example
 Now for the cherry on top: we'd like to be able to run multiple different experiments, all from a single composite config file. `deploy_sweeps` is built for just this. Just add different subsections within subtests, each with the tags that you'd like to define the sweeps.  In the example below, I've decided instead of doing a single sweep over both `hp`'s' I'd just like to isolate hyperparameter 1 and run a bunch of tests on that. I label it with `iso_tests` and `hp1_iso` tags, and do the same with `hp2`. This program will run two sweeps, one for each subtest, and will add tags that will help us filter based on those tests later.
