@@ -29,6 +29,7 @@ arg_defaults = [
     # TODO: if you're planning to deploy your tests on atlas, you'll want to add a line here that syncs your updated code, data, 
     # and maybe dependencies over to atlas every time you initiate a new test e.g.
     # rsync -av --exclude wandb --exclude models --exclude .git --exclude __pycache__ {os.getcwd()} awilf@atlas:/work/awilf/ && rsync -av /work/awilf/utils/alex_utils.py awilf@atlas:/work/awilf/utils
+    # rsync -av /work/awilf/anaconda3/envs/gpt awilf@atlas:/work/awilf/anaconda3/envs
     ('--rsa', str, f'''\
     echo '## NOTE ## no rsync command being used: you must not be intending to deploy this anywhere else'
     '''
@@ -36,6 +37,19 @@ arg_defaults = [
 ]
 def create_sweep(this_yml, tags, trial):
     tags = f'_{tags}' if tags != '' else ''
+    
+    # add "value" and "values" as required by wandb
+    def get_v(v):
+        if isinstance(v, list):
+            return {'values': v} 
+        elif isinstance(v, dict):
+            return v
+        else: # single element
+            return {'value': v}
+
+    this_yml['parameters'] = {k: get_v(v) for k,v in this_yml['parameters'].items()}
+    args['num_runs'] += np.product(list({k: 1 if 'value' in v else len(v['values']) for k,v in this_yml['parameters'].items()}.values())) * args['num_trials']
+
     with Capturing() as output: # modify printing format
         sweep_id = wandb.sweep(this_yml, entity=args['entity'], project=args['project'])
     
@@ -92,7 +106,6 @@ def main():
 
     if args['v']:
         print('This is a composite sweep!\n')
-    
 
     # write new yamls with same name but append _<tagname>, _<tagname>...etc
     base_obj = copy.deepcopy(d)
@@ -108,19 +121,18 @@ def main():
         this_yml['name'] = tags
         
         if '_num_trials' in this_yml['parameters']:
-            num_trials = this_yml['parameters']['_num_trials']
+            args['num_trials'] = this_yml['parameters']['_num_trials']
             del this_yml['parameters']['_num_trials']
         else:
-            num_trials =  1
+            args['num_trials'] =  1
             
-        for trial in range(num_trials):
+        for trial in range(args['num_trials']):
             if '_num_nodes' in this_yml['parameters']:
                 args['num_nodes'].append(this_yml['parameters']['_num_nodes'])
                 del this_yml['parameters']['_num_nodes']
             else:
                 args['num_nodes'].append(1)
 
-            args['num_runs'] += np.product(list({k: 1 if 'value' in v else len(v['values']) for k,v in this_yml['parameters'].items()}.values())) * num_trials
             create_sweep(this_yml, tags, trial)
     
     print('num runs:', args['num_runs'])
