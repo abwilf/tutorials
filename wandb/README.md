@@ -279,8 +279,6 @@ If you need to programatically interact with your wandb runs, check out `clean_w
 ## My Testing Workflow
 A final note, on my testing workflow. You can use this as a starting point for your own workflow, if you'd like. 
 
-### During the Day
-
 1. Review the results from the day before on wandb. 
   a. Add results to a report in a panel grid. In the heading of that section, include date and tag name of this test. 
   b. Come up with a hypothesis I want to test next.
@@ -306,8 +304,5 @@ parameters:
 6. Write down notes for yourself what to look for in this test tomorrow. e.g.
 > Testing `variable_to_test`. Hypothesis: higher values will lead to longer convergence time...etc. If so, test __ next. If not, test __ then __ next. Visualize with convergence plots filtered to tag `this_test_name` and grouped by `variable_to_test`.
 7. Before you go: make sure results make sense as they come in.
-
-### Next Morning
-
 
 That's all for now! Please let me know if you have any questions. It takes a bit of work to get this system up and running, but hopefully it is very worth your while. I know it has been for me.
