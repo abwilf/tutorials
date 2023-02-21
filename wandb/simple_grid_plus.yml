@@ -17,5 +17,3 @@ parameters:
         value: 42
       wdb_entity:
         value: socialiq
-      tags:
-        value: test

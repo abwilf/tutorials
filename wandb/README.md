@@ -40,7 +40,7 @@ We care about this because managing distributed systems is really annoying and e
 - Create an environment and install dependencies for the tutorial and from the `alex_utils.py` file above.
 ```
 conda create -n wdb_tutorial python=3.7 -y && conda activate wdb_tutorial
-pip install --no-cache-dir wandb pyyaml <and dependences from alex_utils.py>
+pip install --no-cache-dir wandb pyyaml pandas numpy requests tqdm h5py pyyaml
 ```
 
 ## How to Use Sweeps? A Simple Example
@@ -54,7 +54,7 @@ The files in this example are included in the repo and reproduced in this `READM
 program: main.py
 method: grid
 parameters:
-  hp1:
+  hp1: # "hp" stands for hyperparameter. This could be any argument.
     values:
     - 1
     - 2
@@ -68,7 +68,7 @@ parameters:
     value: 42
   wdb_entity:
     value: socialiq
-  tags:
+  _tags:
     value: test
 ```
 
@@ -96,8 +96,8 @@ wandb: Run sweep agent with: wandb agent socialiq/tutorials-wandb2/ldexfjng
 #SBATCH --mem 25GB
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=<your_email>@gmail.com # TODO
-#SBATCH --chdir=<your_current_dir> # TODO
-#SBATCH --output=<your_current_dir>/logs/%j.out # TODO
+#SBATCH --chdir=<your_current_dir> # TODO change to your current directory
+#SBATCH --output=<your_current_dir>/logs/%j.out # %j will write the .out and .err files to <job_id>.out/err. you can see <job_id> with squeue
 #SBATCH --error=<your_current_dir>/logs/%j.err # TODO
 
 mkdir -p logs
@@ -154,8 +154,6 @@ parameters:
         value: 42
       wdb_entity:
         value: socialiq
-      tags:
-        value: test
 ```
 
 Then, we run `deploy_sweeps.py`
@@ -214,8 +212,6 @@ parameters:
     value: 42
   wdb_entity:
     value: socialiq
-  tags:
-    value: test
   
   # all subtest parameters here  
   subtests:
