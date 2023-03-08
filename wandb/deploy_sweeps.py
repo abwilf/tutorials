@@ -19,19 +19,24 @@ os.environ['WANDB_AGENT_DISABLE_FLAPPING'] = 'true'
 os.environ['WANDB_AGENT_MAX_INITIAL_FAILURES']='1000'
         
 arg_defaults = [
-    ('--c', str, 'simple_grid.yml'), # config path describing grid search
+    ('--c', str, 'gpt_gh.yml'), # config path describing grid search
     ('--test_time', float, 1), # how many hours does each run take? 1 is default
     ('--v', int, 0), # verbosity: if 0, will only print sweep links and sbatch commands; if 1, will print singularity commands too
     ('--base_sb', str, 'base.sbatch'), # base sbatch path: this program will use this and replace the wandb agent line
     ('--entity', str, 'socialiq'), # TODO: change wandb entity name.
     ('--project', str, ''), # TODO: change wandb project name, if nothing defaults to name of cwd()
+    ('--singularity_prefix', str, srep('''\
+    export WANDB_API_KEY=239e23a9f93922a29983e91684b0a026946715f0 && \
+    export TRANSFORMERS_CACHE='/work/awilf/.cache/transformers_cache' && \
+    export HF_HOME='/work/awilf/.cache/hf_home' && \
+    export XDG_CACHE_HOME='/work/awilf/.cache/xdg_cache' && \
+    singularity exec --nv -B /work/awilf/ rlhf.sif''')),
     
     # TODO: if you're planning to deploy your tests on atlas, you'll want to add a line here that syncs your updated code, data, 
     # and maybe dependencies over to atlas every time you initiate a new test e.g.
-    # rsync -av --exclude wandb --exclude models --exclude .git --exclude __pycache__ {os.getcwd()} awilf@atlas:/work/awilf/ && rsync -av /work/awilf/utils/alex_utils.py awilf@atlas:/work/awilf/utils
     # rsync -av /work/awilf/anaconda3/envs/gpt awilf@atlas:/work/awilf/anaconda3/envs
     ('--rsa', str, f'''\
-    echo '## NOTE ## no rsync command being used: you must not be intending to deploy this anywhere else'
+    rsync -av --exclude wandb --exclude models --exclude .git --exclude __pycache__ {os.getcwd()} awilf@atlas:/work/awilf/ && rsync -av /work/awilf/utils/alex_utils.py awilf@atlas:/work/awilf/utils
     '''
     ),
 ]
@@ -148,7 +153,7 @@ def main():
         print(f'\nExecuting rsync command')
     os.popen(args['rsa'])
 
-    print('\n'.join(args['postfixes']))
+    print('\n'.join(lmap(lambda elt: f"{args['singularity_prefix']} {elt}", args['postfixes'])))
 
 if __name__ == '__main__':
     main()
