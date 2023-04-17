@@ -92,20 +92,21 @@ wandb: Run sweep agent with: wandb agent socialiq/tutorials-wandb2/ldexfjng
 #!/bin/bash
 #SBATCH -p gpu_long
 #SBATCH --gres=gpu:1
-#SBATCH --cpus-per-task=4
-#SBATCH --mem 25GB
+#SBATCH --cpus-per-task=8
+#SBATCH --mem 35GB 
+#SBATCH --time 2-23:00
 #SBATCH --mail-type=ALL
-#SBATCH --mail-user=<your_email>@gmail.com # TODO
-#SBATCH --chdir=<your_current_dir> # TODO change to your current directory
-#SBATCH --output=<your_current_dir>/logs/%j.out # %j will write the .out and .err files to <job_id>.out/err. you can see <job_id> with squeue
-#SBATCH --error=<your_current_dir>/logs/%j.err # TODO
+#SBATCH --mail-user=dummyblah123@gmail.com # TODO
+#SBATCH --chdir=/work/awilf/<repo_name>
+#SBATCH --output=/work/awilf/<repo_name>/logs/%j.out # TODO
+#SBATCH --error=/work/awilf/<repo_name>/logs/%j.err # TODO
 
-mkdir -p logs
+CONDA_ENV='trl' # TODO: replace this with your conda environment name
+CONDA_PROFILE='/work/awilf/anaconda3/etc/profile.d/conda.sh'
 
-# TODO: activate your environment here
-# singularity exec -B /work/awilf/ --nv /work/awilf/AANG/my_env.sif \
-# conda activate env
-wandb agent <agent_id> # e.g. wandb agent socialiq/meta_synthetic/zky0hiry
+singularity exec -B /work/awilf/ --nv /work/awilf/utils/container.sif \
+bash $CONDA_PROFILE && conda activate $CONDA_ENV && \
+wandb agent socialiq/debias/cz8w7a7w
 ```
 
 Then run `sbatch base.sbatch` to submit the job to the queue, and run `squeue | grep andrewid` to see your active jobs. If you're having trouble, you can check the logs using `cat <your_current_dir>/logs/%j.out` where the job id is found in squeue.  I usually first do this using `srun` to make sure I can run with the environment / singularity container, then deploy using `sbatch`.

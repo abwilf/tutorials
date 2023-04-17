@@ -10,5 +10,9 @@
 #SBATCH --output=/work/awilf/<repo_name>/logs/%j.out # TODO
 #SBATCH --error=/work/awilf/<repo_name>/logs/%j.err # TODO
 
-singularity exec -B /work/awilf/ --nv /work/awilf/<repo_name>/container.sif \
-wandb agent socialiq/<repo_name>/j4dgyd0a # this line will be overwritten by wdb.py
+CONDA_ENV='trl' # TODO: replace this with your conda environment name
+CONDA_PROFILE='/work/awilf/anaconda3/etc/profile.d/conda.sh'
+
+singularity exec -B /work/awilf/ --nv /work/awilf/utils/container.sif \
+bash $CONDA_PROFILE && conda activate $CONDA_ENV && \
+wandb agent socialiq/debias/cz8w7a7w

@@ -56,26 +56,7 @@ PASTE_SSH_PUBLIC_KEY_HERE\
 
 ### Specifics
 #### Setting up Environments
-This is described in detail in [Atlas_Singularity.md](https://github.com/abwilf/tutorials/blob/main/Atlas_Singularity.md). The high level idea is: 
-1. We set up our environment **once** on our dev machine using `conda`, where our [Anaconda](https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh) is installed in `/work/andrewid` (e.g. `/work/awilf/anaconda3/envs`).  This can take a while to get to work.
-2. Once we've gotten this to work, we create a singularity container (e.g. `sudo singularity build container.sif container.def`) with the same OS as the dev machine that accesses the anaconda environments _by reference_, essentially passing in a pointer to the conda env location from the outside and mounting it on the container's file system.  The goal here is that then the singularity container is, for all intents and purposes, the _exact same environment as the dev machine_.  e.g. you could then do something like this
-```bash
-singularity exec -B /work/awilf/ --nv container.sif \
-python <my_command_here>
-```
-And it would be the _same_ as if you had done
-
-```bash
-python <my_command_here>
-```
-
-3. This doesn't help us on the dev machine, but then you can sync (1) the created container to any other setting (e.g. Atlas) that supports singularity and (2) the folder with your conda envs (e.g. `rsync -av /work/awilf/anaconda3/envs/my_env awilf@atlas:/work/awilf/anaconda3/envs`), and this command should work the _exact same_ in the deployment setting as it does in your dev setting. It's important to keep all the file paths the same between dev and deployment (e.g. `/work/awilf/anaconda3`) so you can do this.
-```bash
-singularity exec -B /work/awilf/ --nv container.sif \
-python <my_command_here>
-```
-
-The benefits of this approach are that as long as you can get the environment working once on your dev machine, where you have full control, with only a few additional steps and no uncertainty, you can get it working on any machine very quickly.  Then, if you need to update your environments, you just `rsync` over the environment folder again, and you'll only need to update the parts that you've changed instead of retransmitting a full docker container containing all the files (many GB's usually). And this passing-by-reference approach also saves you from having to set up the environment within the docker/singularity container each time, which can be really annoying and not always work.
+This is described in detail in [Atlas_Singularity.md](https://github.com/abwilf/tutorials/blob/main/Atlas_Singularity.md).
 
 #### Developing
 I use vscode to write my code remotely on my development environment. vscode remote code editing piggybacks on ssh, so once you set up your ssh key on the development server vscode will allow you to remote code edit with no passwords.  To do this, get your ssh public key from your local machine and add it to `/home/username/.ssh/authorized_keys`.  Then when you ssh you won't need a password. As a general rule, I try to never type passwords. If I am, it can be automated.
@@ -167,7 +148,11 @@ then create an sbatch file that executes the `wandb agent ...` line that comes o
 #SBATCH --output=/work/awilf/<repo_name>/logs/%j.out # TODO
 #SBATCH --error=/work/awilf/<repo_name>/logs/%j.err # TODO
 
-singularity exec -B /work/awilf/ --nv /work/awilf/<repo_name>/container.sif \
+CONDA_ENV='trl' # TODO: replace this with your conda environment name
+CONDA_PROFILE='/work/awilf/anaconda3/etc/profile.d/conda.sh'
+
+singularity exec -B /work/awilf/ --nv /work/awilf/utils/container.sif \
+bash $CONDA_PROFILE && conda activate $CONDA_ENV && \
 wandb agent ...
 ```
 
@@ -182,7 +167,6 @@ So when you run `python wdb.py --c config.yml`, you'll get something like this:
 Create sweep with ID: nkltdcna
 Sweep URL and Atlas Command:
 sbatch /work/awilf/AANG/base.sbatch
-singularity exec -B /work/awilf/ --nv /work/awilf/AANG/aang.sif wandb agent socialiq/AANG/nkltdcna
 https://wandb.ai/socialiq/aang/sweeps/nkltdcna
 ```
 
