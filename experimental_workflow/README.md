@@ -1,3 +1,6 @@
+# NOTE #
+This tutorial is a bit out of date. A newer version is [here](https://github.com/abwilf/tutorials/tree/main/wandb) :)
+
 # Experimental Workflow
 
 The goal of this tutorial is to introduce you to the way I manage my experiments.  It's important to mention: I think that as long as workflows accomplish some high level goals, they are highly personalizable.  So I would encourage you to carefully consider the goals and the pitfalls sections below, and to take my specific implementation with a healthy amount of skepticism.  At the end of this tutorial, I hope you understand the common problems with expermiental workflows, have learned a good starting place for how to manage your experiments, and have come up with lots of ideas for how you'd like to customize the workflow for yourself.
