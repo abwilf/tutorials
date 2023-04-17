@@ -5,10 +5,11 @@ For any conda environment on your development machine, seamlessly reproduce it o
 Please replace all instances of the following in this tutorial to better match your use case
 - `awilf` -> your username
 - `my_env` -> the name of your conda environment
+- `python my_program.py` -> the command you'd like to run
 - the details of the `container.def` file in step 2 -> the details that match your dev environment
 - `my_dir` -> whatever the directory with your code and data is for the project
 
-I installed anaconda using this link, and installed into `/work/awilf/` (because on Atlas `/home/awilf/` is very limited).
+Note: I installed anaconda using this link (you can use other versions of anaconda if you'd like), and installed into `/work/awilf/` (because on Atlas `/home/awilf/` is very limited).
 ```bash
 wget https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh
 bash Anaconda3-2021.11-Linux-x86_64.sh
@@ -17,12 +18,13 @@ NOTE: Steps 1-4 only have to happen once per machine.
 
 ## Tutorial
 
-1. On your dev machine, make sure all packages are installed in `/work/awilf/anaconda3/envs/my_env` (not in pip cache!). You can use another path if you like, but this is best for Atlas. Get your program working in a conda environment on your dev machine, e.g.
+1. On your dev machine, make sure all packages are installed in `/work/awilf/anaconda3/envs/my_env` (make sure pip cache is set to somewhere in `/work/awilf/` as well so packages all transfer to atlas). You can use another path if you like, but I think this is cleanest for Atlas. Get your program working in a conda environment on your dev machine, e.g.
 ```bash
 conda activate my_env && python my_program.py
 ```
 2. Create a `singularity` container `container.sif` to mimic your operating system and nvidia/cuda settings.
-**container.def**
+
+Here's my **container.def** file.
 ```
 Bootstrap: docker
 From: nvidia/cuda:11.1.1-cudnn8-devel-ubuntu20.04
@@ -33,8 +35,9 @@ On your dev machine, create the container file.
 sudo singularity build container.sif container.def
 ```
 
-Once you've done this, move it to an easy-to-remember path. I choose
+Once you've done this, move it to an easy-to-remember path. I chose a utils folder
 ```bash
+mkdir -p /work/awilf/utils
 mv container.sif /work/awilf/utils
 ```
 
@@ -48,9 +51,9 @@ bash $CONDA_PROFILE && conda activate $CONDA_ENV && \
 python my_program.py
 ```
 
-4. Sync this over to the cluster.
+4. Sync your utils folder over to the cluster, bearing the container.sif file.
 ```bash
-rsync -av container.sif awilf@atlas:/work/awilf/utils
+rsync -av /work/awilf/utils awilf@atlas:/work/awilf
 ```
 
 Note: the above only needs to happen once - any time you have a new environment, you can just do steps 5 and 6.
