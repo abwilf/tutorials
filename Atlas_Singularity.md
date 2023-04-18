@@ -47,7 +47,7 @@ CONDA_ENV='my_env'
 CONDA_PROFILE='/work/awilf/anaconda3/etc/profile.d/conda.sh' # replace with the path to your conda.sh script here
 CONTAINER_PATH='/work/awilf/utils/container.sif'
 singularity exec -B /work/awilf/ --nv $CONTAINER_PATH \
-bash $CONDA_PROFILE && conda activate $CONDA_ENV && \
+bash $CONDA_PROFILE && source activate $CONDA_ENV && \
 python my_program.py
 ```
 

@@ -14,5 +14,5 @@ CONDA_ENV='trl' # TODO: replace this with your conda environment name
 CONDA_PROFILE='/work/awilf/anaconda3/etc/profile.d/conda.sh'
 
 singularity exec -B /work/awilf/ --nv /work/awilf/utils/container.sif \
-bash $CONDA_PROFILE && conda activate $CONDA_ENV && \
+bash $CONDA_PROFILE && source activate $CONDA_ENV && \
 wandb agent socialiq/debias/cz8w7a7w
