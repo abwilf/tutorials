@@ -2,7 +2,7 @@
 Written by Mengrou Shou <mshou@andrew.cmu.edu>
 
 ## Preface
-This guide aims to provide troubleshooting steps for CUDA 11.6 and Nvidia driver 510.47.03 installed on the Vulcan machine.
+This guide aims to provide troubleshooting steps for CUDA 11.8 and Nvidia driver 510.47.03 installed on the Vulcan machine.
 
 ## Checks and Solutions
 ### Verifying if CUDA is installed
@@ -12,8 +12,8 @@ nvcc -V
 
 If this doesn’t work, it may be because PATH hasn’t been configured correctly. Check if the following lines are in the ./bashrc file (e.g. /home/<account name>/.bashrc for the Vulcan machine)
 ```
-export PATH=/usr/local/cuda-11.6/bin${PATH:+:${PATH}}
-export LD_LIBRARY_PATH=/usr/local/cuda-11.6/lib64\ ${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+export PATH=/usr/local/cuda-11.8/bin${PATH:+:${PATH}}
+export LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 ```
 
 ### Verifying if Nvidia driver is installed
@@ -51,11 +51,11 @@ Uninstall Nvidia driver
 ```
 sudo /usr/bin/nvidia-uninstall
 ```
-Get CUDA runfile if you don’t have it
+Get CUDA runfile if you don’t have it (find the 11.8 equivalent of the following)
 ```
 wget https://developer.download.nvidia.com/compute/cuda/11.6.2/local_installers/cuda_11.6.2_510.47.03_linux.run
 ```
-Install Nvidia driver by running the runfile
+Install Nvidia driver by running the runfile (substitute with the 11.8 file name from previous step)
 ```
 sudo sh cuda_11.6.2_510.47.03_linux.run
 ```
