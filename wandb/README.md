@@ -37,6 +37,9 @@ We care about this because managing distributed systems is really annoying and e
 - If you're planning to distribute your tests to Atlas and you want to transfer your environment from a development machine, I would first recommend reading my [tutorial on transferring dependencies using Singularity](https://github.com/abwilf/tutorials/blob/main/Atlas_Singularity.md) and get your singularity container set up now for use later in this tutorial.
 - Create a wandb account (with your @andrew email it's free) and create an "entity" within it. I called my entity `socialiq`.
 - Download the `alex_utils.py` file from [here](https://github.com/abwilf/utils/blob/main/alex_utils.py).
+```
+wget https://raw.githubusercontent.com/abwilf/utils/main/alex_utils.py
+```
 - Create an environment and install dependencies for the tutorial and from the `alex_utils.py` file above.
 ```
 conda create -n wdb_tutorial python=3.7 -y && conda activate wdb_tutorial
