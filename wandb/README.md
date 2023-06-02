@@ -14,7 +14,23 @@ cp /work/awilf/tutorials/wandb/*.py ./ && cp /work/awilf/tutorials/wandb/composi
 p deploy_sweeps.py --c composite_grid.yml # for example
 ```
 ## How Does wandb Work and Why Do We Care?
-Imagine you want to run all combinations of two hyperparameters: `hp1` and `hp2`, where `hp1` can take on the values `1,2,3` and `hp2` can take on the values `4,5,6`. You need to run `9` programs in total. Or you have nine jobs you'd like to be run by some program, with ids `1...9`. How do you distribute the work?
+Imagine you have some program that runs your experiments, and you have built your code to accept different arguments that correspond to the experiments you'd like to run. For example,
+```
+python main.py --batch_size 64 --prompt_type chain_of_thought
+```
+or
+```
+python main.py --batch_size 32 --prompt_type few_shot
+```
+
+You might want to **search** over different possibilities for the different arguments, e.g. 
+```python
+prompt_type=['baseline', 'chain_of_thought', 'few_shot']
+```
+
+How do you do this? A simple solution would be to comment and uncomment the code every time you have a test. A more sophisticated solution would be to put all your tests into arguments and load up a few programs like the above. When the results come back, you store your results manually in a google sheet or something. An even more sophisticated solution would be to put all the combinations of arguments you'd like to run into some central server, then have that server "dispatch" jobs to waiting "agents" until there are no more jobs to dispatch, because you've searched over the whole space you'd like to. That's what wandb does.
+
+Imagine you want to run all combinations of two hyperparameters (arguments): `--hp1` and `--hp2`, where `hp1` can take on the values `1,2,3` and `hp2` can take on the values `4,5,6`. You need to run `9` programs in total. Or you have nine jobs you'd like to be run by some program, with ids `1...9`. How do you distribute the work?
 
 The idea of a wandb sweep is that you 
 1. **Define the sweep** using a yaml configuration file – this is how wandb will know what to search over (e.g. `hp1=1,hp2=4; hp1=1,hp2=5; ...` or `id=1;id=2...`)
@@ -75,6 +91,15 @@ parameters:
     value: test
 ```
 
+This will end up running these programs:
+```
+python main.py --hp1 1 --hp2 4 --seed 42 --wdb_entity socialiq --_tags test
+python main.py --hp1 1 --hp2 5 --seed 42 --wdb_entity socialiq --_tags test
+python main.py --hp1 1 --hp2 6 --seed 42 --wdb_entity socialiq --_tags test
+python main.py --hp1 2 --hp2 4 --seed 42 --wdb_entity socialiq --_tags test
+python main.py --hp1 2 --hp2 5 --seed 42 --wdb_entity socialiq --_tags test
+...etc
+```
 2. Create the sweep
 ```
 wandb sweep simple_grid.yml
