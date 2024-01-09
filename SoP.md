@@ -1,6 +1,8 @@
+# Statements of Purpose
+
 If you're reading this, it's probably because you've asked me to review your statement of purpose for grad school. If so, I'm of course happy to – consider this doc my initial advice, and reach out if you have any questions or want me to read over more drafts :)
 
-Also, I'm not a professor so take this with a grain of salt! Professors are probably the best ones to review your SoP.
+A quick caveat: I'm not a professor so take this all with a grain of salt!
 
 ## What is the purpose of a Statement of Purpose?
 
@@ -19,7 +21,7 @@ Imagine you're this professor. You are *super* busy. You're reviewing a *tall* s
 
 There are two main problems with that essay:
 - It's hard to separate from the pack: most people write that essay, and the competition is stiff – a lot of them have done impressive things.
-- More importantly, it doesn't address what the professor is really looking for. Your professor has a research agenda, and they want to see "how well will this student fit into my research agenda?" Part of the purpose of the SoP is to *show them that you think about their field in a new and interesting way*. They want to see your perspective on the work they care about. If you start with personal stuff about you, you'll lose them. 
+- More importantly, it doesn't address what the professor is really looking for. Your professor has a research agenda, and they want to see "how well will this student fit into my research agenda?" Part of the purpose of the SoP is to *show them that you think about their field in a new and interesting way*. They want to see your perspective on the work they care about. If you start with personal stuff about you, you risk losing them. 
 - So, think hard about (1) – you may benefit from your mentors' advice here – and fill in (2) around it.
 
 ## How do you write one?
@@ -42,7 +44,7 @@ Basically, the structure I'd recommend is as follows:
 - I'll add more here as I read more SoP's :)
 
 ### Tangent on "Hook, Need, Gap, Contribution"
-- It's a simple formula but it takes time to figure out how to do it well. Go read a bunch of paper intros with that in mind, and start to see what those are to get a feel for how people structure academic arguemnts. Here's an example:
+- It's a simple formula but it takes time to figure out how to do it well. Go read a bunch of paper intros with the below structure in mind, identifying what their "hooks", "needs", and "gaps" are so you can get a feel for how people structure academic arguemnts. Here's an example:
 - "hook" gets them interested: e.g., code generation systems are cool & would be a huge win for humanity
 - "need": we need code generation to be reliable and interpretable b/c ...
 - "gap": current code gen systems have difficulty with reliability as shown here and here and interpretability as shown here and here. Work has tried to solve this by doing x y and z but still fails to reach the goal
