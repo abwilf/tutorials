@@ -1,0 +1,13 @@
+program: deploy/example.py
+method: grid
+parameters:
+  _tags: 
+    value: some_tag
+  arg1: 
+    values:
+    - 1
+    - 2
+  arg2:
+    values:
+      - 2
+      - 3

@@ -1,0 +1,11 @@
+--- Agent Commands ---
+wandb agent socialiq/codesim/25uzlxku
+wandb agent socialiq/codesim/7pd18uw3
+
+--- Sweep URLs ---
+https://wandb.ai/socialiq/codesim/sweeps/25uzlxku
+https://wandb.ai/socialiq/codesim/sweeps/7pd18uw3
+
+--- atlas ---
+sbatch /work/awilf/tutorials/experiments/deploy/sbatches/example_Mar_13_hi,there_8d30_atlas.sbatch
+sbatch /work/awilf/tutorials/experiments/deploy/sbatches/example_Mar_13_hey_d6b5_atlas.sbatch
