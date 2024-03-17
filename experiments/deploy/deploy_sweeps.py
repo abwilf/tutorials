@@ -6,7 +6,7 @@ R:
 - this script (deploy/deploy_sweeps.py)
 - sbatch file(s) (e.g., deploy/atlas.sbatch): the important thing is that it has "wandb agent" in it -- this script will add wandb agent <sweep_id> and a ' to the end.
 - A config yml (e.g. deploy/example.yml)
-- A program (e.g., deploy/example.py) -- note: will usually be outside of deploy, just here for example
+- A program (e.g., example.py) -- note: will usually be outside of deploy, just here for example
 
 M/E:
 1. Create sweep(s) from config

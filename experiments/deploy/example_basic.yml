@@ -1,4 +1,4 @@
-program: deploy/example.py
+program: example.py
 method: grid
 parameters:
   _tags: 

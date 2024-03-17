@@ -1,2 +1,3 @@
 experiments/wandb
 experiments/deploy/sbatches
+experiments/deploy/wandb

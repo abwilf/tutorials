@@ -73,7 +73,9 @@ singularity exec --nv -B /work/awilf/ base_img.sif \
 True
 ```
 
-Great! That's all we need; now we should be good to get this ported over to `atlas`.
+As a review, what we just did is quite clever. Instead of creating a different singularity container for each project, we create *one* singularity container that mimics our base OS and low-level binaries, like cuda and cudnn, then we sync that over *once*. Then any time we update environments, we can just sync over the environment files and pass them in by reference. That way, *anything* that works on our local machine from conda should reproduce on atlas instantly. Pretty cool, right?
+
+Next, we'll get this working on atlas.
 
 ## Running on Atlas
 ### Transferring the Files
@@ -126,7 +128,7 @@ I'm going to assume you have a basic conceptual knowledge of what wandb sweeps a
 
 Ok so here's the practical side: you've got a `yml` that defines the programs you want to run, e.g. `./deploy/example_basic.yml`
 ```yaml
-program: deploy/example.py
+program: example.py
 method: grid
 parameters:
   _tags: 
@@ -143,10 +145,10 @@ parameters:
 
 This means we want to run the following programs:
 ```bash
-python deploy/example.py --arg1 1 --arg2 2
-python deploy/example.py --arg1 1 --arg2 3
-python deploy/example.py --arg1 2 --arg2 2
-python deploy/example.py --arg1 2 --arg2 3
+python example.py --arg1 1 --arg2 2
+python example.py --arg1 1 --arg2 3
+python example.py --arg1 2 --arg2 2
+python example.py --arg1 2 --arg2 3
 ```
 
 How do we do that? First, we let the server know that we want these programs to be run, with
@@ -162,7 +164,7 @@ wandb: View sweep at: https://wandb.ai/socialiq/tutorials-experiments_deploy/swe
 wandb: Run sweep agent with: wandb agent socialiq/tutorials-experiments_deploy/yuaqp4s5
 ```
 
-Now we can run an `agent`, which will receive from the server information about which program to run, and will run it, logging stuff along the way as you choose (see `deploy/example.py` for a minimal example)
+Now we can run an `agent`, which will receive from the server information about which program to run, and will run it, logging stuff along the way as you choose (see `example.py` for a minimal example)
 
 ```bash
 wandb agent socialiq/tutorials-experiments_deploy/yuaqp4s5
@@ -177,7 +179,7 @@ wandb: Starting wandb agent 🕵️
 	_tags: some_tag
 	arg1: 1
 	arg2: 2
-2024-03-13 18:06:13,097 - wandb.wandb_agent - INFO - About to run command: /usr/bin/env python deploy/example.py --_tags=some_tag --arg1=1 --arg2=2
+2024-03-13 18:06:13,097 - wandb.wandb_agent - INFO - About to run command: /usr/bin/env python example.py --_tags=some_tag --arg1=1 --arg2=2
 ...
 ```
 
@@ -311,7 +313,7 @@ wandb.log({'accuracy': args.arg1+args.arg2})
 2. **The sweep yml file** is a bit different, see `example.yml`, reproduced below. You don't need "value" or "values" anymore – those were annoying. And if you want to have a single yml specify multiple experiments, you can do that.
 
 ```yaml
-program: deploy/example.py
+program: example.py
 method: grid
 parameters:
   arg1: 1 # this will be inherited by all subtests, but can be overwritten
@@ -407,4 +409,112 @@ So, **tl;dr**:
 5. Submit the sbatches in atlas
 6. Watch the results come in :)
 
+### "But wait! My program is a shell script, or some non-standard python script!"
+No problem. You can run wandb sweep with a shell script instead, and do whatever you'd like in there – even call multiple python program, each with wandb.log() (because wandb logs the run names and sweep ids).
+
+Check it out: imagine we have two python files now that we want to run, `example.py` and `example2.py`. And we want to run a script like this: `script.sh`.
+
+**example.py**
+```python
+import wandb
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--_tags", type=str, default="delete_test")
+parser.add_argument("--arg1", type=int, default=0)
+parser.add_argument("--arg2", type=int, default=0)
+args = parser.parse_args()
+
+wandb.init(
+    project="delete_test",
+    entity="awilf",
+    tags=args._tags.split(',')
+)
+
+# Do stuff here
+wandb.log({'accuracy': args.arg1+args.arg2})
+```
+
+**example2.py**
+```python
+import wandb
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--_tags", type=str, default="delete_test")
+parser.add_argument("--arg2", type=int, default=0)
+parser.add_argument("--arg3", type=int, default=0)
+args = parser.parse_args()
+
+wandb.init(
+    project="delete_test",
+    entity="awilf",
+    tags=args._tags.split(',')
+)
+
+# Do stuff here
+wandb.log({'hi': args.arg2*args.arg3})
+```
+
+**script.sh**: want it to be something like this
+```bash
+## Bookkeeping to process the args in the way we want them (omitted, see the actual file for details)
+...
+
+##  activate conda
+. /work/awilf/anaconda3/etc/profile.d/conda.sh
+conda activate example_env
+
+## run the commands
+cmd="python example.py --arg1 ${args[arg1]} --arg2 ${args[arg2]}"
+echo "$cmd"
+eval "$cmd"
+
+
+cmd2="python example2.py --arg2 ${args[arg2]} --arg3 ${args[arg3]}"
+echo "$cmd2"
+eval "$cmd2"
+```
+
+Then we can just create a sweep yml file that also defines the "command" used to run, instead of just a program. See docs on that [here](https://docs.wandb.ai/guides/sweeps/define-sweep-configuration#command-example).
+
+**example_sh.yml**
+```yml
+command: 
+  - bash
+  - script.sh
+  - ${args}
+method: grid
+parameters:
+  arg1: 
+    - 1
+  arg2: 
+    - 2
+    - 3
+  _tags: some_tag
+  subtests:
+    sh_test:
+      arg3:
+        - 4
+        - 5
+```
+
+Then we can run `deploy_sweeps.py` like usual
+```bash
+$ p deploy/deploy_sweeps.py example_sh atlas
+--- Agent Commands ---
+wandb agent socialiq/codesim/02slqx4r
+
+--- Sweep URLs ---
+https://wandb.ai/socialiq/codesim/sweeps/02slqx4r
+
+--- atlas ---
+sbatch /work/awilf/tutorials/experiments/deploy/sbatches/example_sh_Mar_17_sh_test_b923_atlas.sbatch
+```
+
+Then we can run the agent command, and we'll see this nice output in the sweep link. Basically, wandb treats each "run" as each run of the *script*, so both python programs are run as part of that single "run", meaning their logs are nicely grouped by run, even though they're separate programs. So in each single run, you can see both "hi" and "accuracy" being logged, even though they were logged from two different python programs, run in sequence. e.g.,
+![alt text](image-5.png)
+
+Then for the full sweep, we see that both example and example2 log their respective outputs for each run and we can do all our nice visualizations...etc.
+![alt text](image-4.png)
+
+Pretty cool, right? You might not use this feature much, but it's helpful to know how to call the script instead of just a python program – especially b/c when you're reproducing, often times people will have pipelines of multiple programs running in sequence you'll need to stack together. I used to try to modify their code to make these into single python programs, but this is way easier.
 

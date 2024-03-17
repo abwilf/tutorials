@@ -1,4 +1,4 @@
-program: deploy/example.py
+program: example.py
 method: grid
 parameters:
   arg1: 1 # this will be inherited by all subtests, but can be overwritten
