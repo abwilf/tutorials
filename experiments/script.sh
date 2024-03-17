@@ -32,7 +32,6 @@ cmd="python example.py --arg1 ${args[arg1]} --arg2 ${args[arg2]}"
 echo "$cmd"
 eval "$cmd"
 
-
 cmd2="python example2.py --arg2 ${args[arg2]} --arg3 ${args[arg3]}"
 echo "$cmd2"
 eval "$cmd2"

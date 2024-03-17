@@ -410,9 +410,9 @@ So, **tl;dr**:
 6. Watch the results come in :)
 
 ### "But wait! My program is a shell script, or some non-standard python script!"
-No problem. You can run wandb sweep with a shell script instead, and do whatever you'd like in there – even call multiple python program, each with wandb.log() (because wandb logs the run names and sweep ids).
+No problem. You can run wandb sweep with a shell script instead, and do whatever you'd like in there – even call multiple python programs, each with wandb.log() (because wandb logs the run names and sweep ids).
 
-Check it out: imagine we have two python files now that we want to run, `example.py` and `example2.py`. And we want to run a script like this: `script.sh`.
+Imagine we have two python files now that we want to run, `example.py` and `example2.py`. And we want to run a script that runs them both in sequence, `script.sh`.
 
 **example.py**
 ```python
@@ -454,7 +454,7 @@ wandb.init(
 wandb.log({'hi': args.arg2*args.arg3})
 ```
 
-**script.sh**: want it to be something like this
+**script.sh**
 ```bash
 ## Bookkeeping to process the args in the way we want them (omitted, see the actual file for details)
 ...
@@ -468,13 +468,12 @@ cmd="python example.py --arg1 ${args[arg1]} --arg2 ${args[arg2]}"
 echo "$cmd"
 eval "$cmd"
 
-
 cmd2="python example2.py --arg2 ${args[arg2]} --arg3 ${args[arg3]}"
 echo "$cmd2"
 eval "$cmd2"
 ```
 
-Then we can just create a sweep yml file that also defines the "command" used to run, instead of just a program. See docs on that [here](https://docs.wandb.ai/guides/sweeps/define-sweep-configuration#command-example).
+Then we can just create a sweep yml file that defines the "command" used to run, instead of just a program. See docs on that [here](https://docs.wandb.ai/guides/sweeps/define-sweep-configuration#command-example). You can run all kinds of nonstandard commands.
 
 **example_sh.yml**
 ```yml
@@ -497,7 +496,7 @@ parameters:
         - 5
 ```
 
-Then we can run `deploy_sweeps.py` like usual
+And then we can run `deploy_sweeps.py` like usual
 ```bash
 $ p deploy/deploy_sweeps.py example_sh atlas
 --- Agent Commands ---
@@ -510,11 +509,13 @@ https://wandb.ai/socialiq/codesim/sweeps/02slqx4r
 sbatch /work/awilf/tutorials/experiments/deploy/sbatches/example_sh_Mar_17_sh_test_b923_atlas.sbatch
 ```
 
-Then we can run the agent command, and we'll see this nice output in the sweep link. Basically, wandb treats each "run" as each run of the *script*, so both python programs are run as part of that single "run", meaning their logs are nicely grouped by run, even though they're separate programs. So in each single run, you can see both "hi" and "accuracy" being logged, even though they were logged from two different python programs, run in sequence. e.g.,
+When we run the agent command, we'll see this nice output in the sweep link. Basically, wandb treats each "run" as each run of the *script*, so both python programs are executed as part of that single "run", meaning their logs are nicely grouped by run, even though they're separate programs. So in each single run, you can see both "hi" and "accuracy" being logged, which is really nice.
 ![alt text](image-5.png)
 
-Then for the full sweep, we see that both example and example2 log their respective outputs for each run and we can do all our nice visualizations...etc.
+Then for the full sweep, we see that both example and example2 log their respective outputs for each run and we can do all our nice visualizations on top of this, e.g.
 ![alt text](image-4.png)
+![alt text](image-6.png)
 
-Pretty cool, right? You might not use this feature much, but it's helpful to know how to call the script instead of just a python program – especially b/c when you're reproducing, often times people will have pipelines of multiple programs running in sequence you'll need to stack together. I used to try to modify their code to make these into single python programs, but this is way easier.
+Pretty cool, right? You might not use this feature much, but it's helpful to know how to call the script instead of just a python program – especially b/c when you're reproducing, often times people will have pipelines of multiple programs running in sequence you'll need to stack together. I used to try to modify their code to make these into single python programs, but this is way easier and more reliable.
 
+Happy experimenting!
